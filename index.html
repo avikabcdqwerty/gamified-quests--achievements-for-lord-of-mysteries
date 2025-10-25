@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!--
+      Lord of Mysteries: Gamified Quests & Achievements UI Scaffold
+      [ISSUE_ID]: 11374
+      - Modular, accessible, and visually consistent React/TypeScript scaffold
+      - Ready for backend/API integration and expansion
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Lord of Mysteries Quests & Achievements</title>
+    <!-- Visually consistent, accessible font and minimal styling for prototyping -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #2d3142;
+        --accent: #ef8354;
+        --bg: #f7f7fa;
+        --surface: #fff;
+        --border: #e0e0e0;
+        --success: #3ec300;
+        --danger: #e63946;
+        --text: #22223b;
+        --muted: #6c757d;
+        --radius: 8px;
+        --shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+      header {
+        background: var(--primary);
+        color: #fff;
+        padding: 1.5rem 0;
+        text-align: center;
+        letter-spacing: 0.02em;
+        box-shadow: var(--shadow);
+      }
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+      nav {
+        min-width: 220px;
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem 1rem;
+        height: fit-content;
+      }
+      section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+      .quest-list {
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+      }
+      .quest-list h2 {
+        margin-top: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      .quest-item {
+        border-bottom: 1px solid var(--border);
+        padding: 1rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .quest-item:last-child {
+        border-bottom: none;
+      }
+      .quest-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+      .quest-desc {
+        color: var(--muted);
+        font-size: 0.97rem;
+      }
+      .quest-meta {
+        display: flex;
+        gap: 1.5rem;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+      .quest-actions {
+        margin-top: 0.5rem;
+        display: flex;
+        gap: 0.5rem;
+      }
+      .btn {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: var(--radius);
+        padding: 0.5rem 1.2rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn[disabled],
+      .btn:disabled {
+        background: var(--border);
+        color: var(--muted);
+        cursor: not-allowed;
+      }
+      .btn-secondary {
+        background: var(--primary);
+      }
+      .quest-progress-bar {
+        width: 100%;
+        background: var(--border);
+        border-radius: 4px;
+        height: 8px;
+        margin-top: 0.5rem;
+        overflow: hidden;
+      }
+      .quest-progress-bar-inner {
+        background: var(--accent);
+        height: 100%;
+        transition: width 0.3s;
+      }
+      .achievement-list {
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1.5rem;
+      }
+      .achievement-list h2 {
+        margin-top: 0;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+      .achievement-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .achievement-item:last-child {
+        border-bottom: none;
+      }
+      .achievement-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      .achievement-title {
+        font-weight: 600;
+      }
+      .achievement-desc {
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+      .notification-area {
+        position: fixed;
+        top: 1.5rem;
+        right: 1.5rem;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-width: 260px;
+      }
+      .notification {
+        background: var(--surface);
+        border-left: 5px solid var(--accent);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 1rem 1.2rem;
+        font-size: 1rem;
+        color: var(--primary);
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        animation: fadeIn 0.4s;
+      }
+      .notification.success {
+        border-left-color: var(--success);
+      }
+      .notification.error {
+        border-left-color: var(--danger);
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      /* Accessibility: focus styles */
+      .btn:focus,
+      .btn-secondary:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      /* Responsive */
+      @media (max-width: 900px) {
+        main {
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+        nav {
+          min-width: 0;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header role="banner">
+      <h1 id="app-title">Lord of Mysteries: Quests & Achievements</h1>
+      <p id="app-desc" style="margin:0.5rem 0 0 0;font-size:1.1rem;">
+        Embark on story-driven quests and earn legendary achievements!
+      </p>
+    </header>
+
+    <!-- Main Content -->
+    <main role="main">
+      <!-- Navigation / Profile Sidebar -->
+      <nav aria-label="User profile and navigation">
+        <div id="user-profile" tabIndex="0" aria-label="User Profile">
+          <!-- Placeholder for user avatar and name -->
+          <div
+            style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1.2rem;"
+          >
+            <div
+              style="width:48px;height:48px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--primary);"
+              aria-hidden="true"
+            >
+              <span>🧑</span>
+            </div>
+            <div>
+              <div
+                id="user-name"
+                style="font-weight:600;font-size:1.1rem;"
+                aria-label="User Name"
+              >
+                [Username]
+              </div>
+              <div
+                id="user-level"
+                style="color:var(--muted);font-size:0.95rem;"
+                aria-label="User Level"
+              >
+                Level 1 Seeker
+              </div>
+            </div>
+          </div>
+          <hr style="border:0;border-top:1px solid var(--border);" />
+          <ul
+            style="list-style:none;padding:0;margin:1.2rem 0 0 0;display:flex;flex-direction:column;gap:0.7rem;"
+          >
+            <li>
+              <a
+                href="#quests"
+                style="color:var(--primary);text-decoration:none;font-weight:600;"
+                >Quests</a
+              >
+            </li>
+            <li>
+              <a
+                href="#achievements"
+                style="color:var(--primary);text-decoration:none;font-weight:600;"
+                >Achievements</a
+              >
+            </li>
+            <li>
+              <a
+                href="#profile"
+                style="color:var(--primary);text-decoration:none;font-weight:600;"
+                >Profile</a
+              >
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Main Sections: Quests and Achievements -->
+      <section>
+        <!-- Quest List Section -->
+        <section
+          id="quests"
+          class="quest-list"
+          aria-labelledby="quests-heading"
+        >
+          <h2 id="quests-heading">Available Quests</h2>
+          <div id="quest-list-container">
+            <!--
+              Quest items will be rendered here by React.
+              Example structure:
+              <div class="quest-item" role="group" aria-labelledby="quest-title-1">
+                <div class="quest-title" id="quest-title-1">Investigate the Fog</div>
+                <div class="quest-desc">Uncover the secrets behind the mysterious fog in Backlund.</div>
+                <div class="quest-meta">
+                  <span>Requirement: Complete Chapter 1</span>
+                  <span>Status: Not Started</span>
+                </div>
+                <div class="quest-actions">
+                  <button class="btn" aria-label="Start Quest">Start</button>
+                </div>
+                <div class="quest-progress-bar" aria-label="Quest Progress">
+                  <div class="quest-progress-bar-inner" style="width:0%"></div>
+                </div>
+              </div>
+            -->
+          </div>
+        </section>
+
+        <!-- Achievement List Section -->
+        <section
+          id="achievements"
+          class="achievement-list"
+          aria-labelledby="achievements-heading"
+        >
+          <h2 id="achievements-heading">Achievements</h2>
+          <div id="achievement-list-container">
+            <!--
+              Achievement items will be rendered here by React.
+              Example structure:
+              <div class="achievement-item" role="group" aria-labelledby="ach-title-1">
+                <div class="achievement-icon" aria-hidden="true">🏆</div>
+                <div>
+                  <div class="achievement-title" id="ach-title-1">First Steps</div>
+                  <div class="achievement-desc">Completed your first quest.</div>
+                </div>
+              </div>
+            -->
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- Notification Area (for real-time updates) -->
+    <div
+      class="notification-area"
+      id="notification-area"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      <!--
+        Notifications will be rendered here by React.
+        Example:
+        <div class="notification success" role="alert">
+          <span>🎉</span> Achievement Unlocked: First Steps!
+        </div>
+      -->
+    </div>
+
+    <!-- React & App Mount Point -->
+    <div id="root" style="display:none"></div>
+    <!--
+      In a full implementation, React (with TypeScript) would mount to #root and hydrate the UI.
+      This scaffold is ready for integration with backend APIs and authentication.
+    -->
+
+    <!-- Accessibility: Skip to main content link -->
+    <a
+      href="#quests"
+      style="position:absolute;left:-999px;top:auto;width:1px;height:1px;overflow:hidden;"
+      onfocus="this.style.position='static';this.style.width='auto';this.style.height='auto';"
+      onblur="this.style.position='absolute';this.style.width='1px';this.style.height='1px';"
+      >Skip to main content</a
+    >
+
+    <!-- Placeholder for error logging (expand in full implementation) -->
+    <script>
+      // Simple error logging for scaffold
+      window.onerror = function (msg, url, lineNo, columnNo, error) {
+        // In production, send to logging backend
+        console.error(
+          '[UI Scaffold Error]',
+          msg,
+          'at',
+          url + ':' + lineNo + ':' + columnNo,
+          error
+        );
+        return false;
+      };
+    </script>
+  </body>
+</html>
